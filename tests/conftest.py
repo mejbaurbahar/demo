@@ -117,5 +117,7 @@ def pytest_html_results_summary(prefix, summary, postfix):
     ])
 
 def pytest_configure(config):
-    config._metadata['AI Engine'] = 'Active (Local TinyLlama)'
-    config._metadata['Autonomous Level'] = 'Level 3 - Diagnostic'
+    # Safely add metadata to the report if the plugin is available
+    if hasattr(config, "_metadata"):
+        config._metadata['AI Engine'] = 'Active (Local TinyLlama)'
+        config._metadata['Autonomous Level'] = 'Level 3 - Diagnostic'
