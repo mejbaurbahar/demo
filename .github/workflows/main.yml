@@ -6,7 +6,13 @@ on:
   pull_request:
     branches: [ main, master ]
   schedule:
-    - cron: '0 0 * * *' # Nightly at midnight
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      email_recipient:
+        description: 'Email address to send the report to'
+        required: false
+        default: 'mejbaurbahar@gmail.com'
 
 jobs:
   test:
@@ -32,6 +38,7 @@ jobs:
         ollama pull tinyllama
     - name: Run tests
       run: |
+        export PYTHONPATH=$PYTHONPATH:.
         pytest --html=reports/report.html --self-contained-html --tracing on --video on
     - name: Upload Report
       uses: actions/upload-artifact@v4
@@ -53,9 +60,9 @@ jobs:
         server_address: smtp.gmail.com
         server_port: 465
         username: mejbaurbahar@gmail.com
-        password: xouawecapjmsqgzb # Removed spaces for consistency
+        password: xouawecapjmsqgzb
         subject: Playwright Automation Report - ${{ job.status }}
-        to: mejbaurbahar@gmail.com
+        to: ${{ github.event.inputs.email_recipient || 'mejbaurbahar@gmail.com' }}
         from: Automation Agent <mejbaurbahar@gmail.com>
         body: |
           The automation test execution has completed.
