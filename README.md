@@ -33,8 +33,8 @@ saucedemo_automation/
 
 1. **Clone the repository**:
    ```bash
-   git clone <repo-url>
-   cd saucedemo_automation
+   git clone https://github.com/mejbaurbahar/demo.git
+   cd demo
    ```
 
 2. **Install dependencies**:
