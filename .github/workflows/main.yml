@@ -60,7 +60,7 @@ jobs:
         server_address: smtp.gmail.com
         server_port: 465
         username: mejbaurbahar@gmail.com
-        password: xouawecapjmsqgzb
+        password: nbueqkiceiojnvfi
         subject: Playwright Automation Report - ${{ job.status }}
         to: ${{ github.event.inputs.email_recipient || 'mejbaurbahar@gmail.com' }}
         from: Automation Agent <mejbaurbahar@gmail.com>
