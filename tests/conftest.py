@@ -28,6 +28,17 @@ def pytest_runtest_makereport(item, call):
     extra = getattr(report, "extra", [])
 
     if report.when == "call":
+        # 0. Capture Test Data (Parameters)
+        params = item.callspec.params if hasattr(item, 'callspec') else {}
+        if params:
+            param_html = f"""
+            <div style="background: #eef2ff; border-left: 5px solid #6366f1; padding: 10px; margin: 10px 0;">
+                <b style="color: #4338ca;">📦 Input Test Data:</b>
+                <pre style="font-size: 11px; margin: 5px 0;">{str(params)}</pre>
+            </div>
+            """
+            extra.append(pytest_html.extras.html(param_html))
+
         # Determine category based on markers
         category = "General"
         if item.get_closest_marker("smoke"): category = "🔥 Smoke"
@@ -58,12 +69,13 @@ def pytest_runtest_makereport(item, call):
             ai_report = ai_service.analyze_failure(None, combined_context, error_details)
             
             # High-impact AI Box
+            ai_report_html = ai_report.replace('\n', '<br>')
             ai_box = f"""
             <div style="background: linear-gradient(135deg, #6e8efb, #a777e3); color: white; padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
                 <h3 style="margin-top: 0; display: flex; align-items: center;">🤖 AI Autonomous QA Engineer - Diagnosis</h3>
                 <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.3); margin: 10px 0;">
                 <div style="font-size: 15px; line-height: 1.6;">
-                    {ai_report.replace('\n', '<br>')}
+                    {ai_report_html}
                 </div>
                 <div style="margin-top: 15px; font-size: 12px; opacity: 0.8; font-style: italic;">
                     * This analysis was generated autonomously by analyzing browser traces, network traffic, and DOM state.
