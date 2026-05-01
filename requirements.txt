@@ -1,0 +1,11 @@
+playwright
+pytest
+pytest-playwright
+pytest-html
+pytest-xdist
+python-dotenv
+requests
+openai
+Pillow
+beautifulsoup4
+docker

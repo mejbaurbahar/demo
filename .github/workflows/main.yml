@@ -1,0 +1,66 @@
+name: Playwright AI Automation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 0 * * *' # Nightly at midnight
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r saucedemo_automation/requirements.txt
+    - name: Install Playwright Browsers
+      run: playwright install --with-deps
+    - name: Setup Ollama (Local AI)
+      run: |
+        curl -fsSL https://ollama.com/install.sh | sh
+        ollama serve &
+        sleep 10
+        ollama pull tinyllama
+    - name: Run tests
+      run: |
+        cd saucedemo_automation
+        pytest --html=reports/report.html --self-contained-html --tracing on --video on
+    - name: Upload Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
+        path: saucedemo_automation/reports/
+    - name: Upload Traces/Videos
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: test-results
+        path: saucedemo_automation/test-results/
+    
+    - name: Send Email Notification
+      uses: dawidd6/action-send-mail@v3
+      if: always()
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: mejbaurbahar@gmail.com # Please update with your actual Gmail address
+        password: xoua weca pjms qgzb
+        subject: Playwright Automation Report - ${{ job.status }}
+        to: mejbaurbahar@gmail.com # The recipient email
+        from: Automation Agent <mejbaurbahar@gmail.com>
+        body: |
+          The automation test execution has completed.
+          Status: ${{ job.status }}
+          
+          You can find the detailed report attached to this email or in the GitHub Action artifacts.
+        attachments: saucedemo_automation/reports/report.html
