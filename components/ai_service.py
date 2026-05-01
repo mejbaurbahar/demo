@@ -37,11 +37,25 @@ class AIService:
 
     def _heuristic_analysis(self, error, logs):
         """Rule-based engine that acts as a lightweight AI for CI environments."""
+        analysis = "### 🔍 Failure Investigation\n"
         if "timeout" in error.lower():
-            return "Analysis: Possible network latency or element loading issue. Suggestion: Increase timeout or check locator stability."
-        if "not match" in error.lower():
-            return "Analysis: Authentication failure. Suggestion: Verify credentials or session state."
-        return f"Analysis: Generic failure detected. Error: {error[:100]}"
+            analysis += "**Root Cause:** The system waited for an element that never appeared (Timeout).\n"
+            analysis += "**POC Explanation:** The screenshot shows the page state when the timeout occurred. It likely failed because of a slow network or a change in the application UI.\n"
+            analysis += "**Recommendation:** Check if the element selector has changed or increase the synchronization timeout."
+        elif "not match" in error.lower() or "Epic sadface" in error:
+            analysis += "**Root Cause:** Authentication or Validation Error.\n"
+            analysis += "**POC Explanation:** The application correctly rejected the input as per the test scenario (Negative Testing).\n"
+            analysis += "**Recommendation:** If this was a valid login attempt, verify the credentials in the test data."
+        elif "AssertionError" in error:
+            analysis += "**Root Cause:** Logic Mismatch (Assertion Failed).\n"
+            analysis += "**POC Explanation:** The actual value on the screen did not match the expected value defined in the test script.\n"
+            analysis += "**Recommendation:** Verify if the business logic has changed or if there is a functional bug."
+        else:
+            analysis += f"**Root Cause:** General System Exception.\n"
+            analysis += f"**Details:** {error[:200]}...\n"
+            analysis += "**Recommendation:** Technical debug required by the QA team."
+        
+        return analysis
 
     def _call_openai_compatible(self, prompt):
         # OpenAI/DeepSeek/Qwen logic

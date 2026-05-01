@@ -11,20 +11,13 @@ ai_service = AIService()
 def capture_logs(page: Page):
     """Fixture to capture console logs and network errors during test execution."""
     logs = {"console": [], "network_errors": []}
-    
-    # Listen for console logs
     page.on("console", lambda msg: logs["console"].append(f"[{msg.type}] {msg.text}"))
-    
-    # Listen for network errors (failed requests)
     page.on("requestfailed", lambda request: logs["network_errors"].append(
         f"URL: {request.url} | Error: {request.failure.error_text if request.failure else 'Unknown error'}"
     ))
-    
-    # Listen for response errors (4xx, 5xx)
     page.on("response", lambda response: logs["network_errors"].append(
-        f"URL: {response.url} | Status: {response.status} {response.status_text}"
+        f"URL: {response.url} | Status: {response.status}"
     ) if response.status >= 400 else None)
-
     yield logs
 
 @pytest.hookimpl(hookwrapper=True)
@@ -35,65 +28,82 @@ def pytest_runtest_makereport(item, call):
     extra = getattr(report, "extra", [])
 
     if report.when == "call":
-        xfail = hasattr(report, "wasxfail")
-        # Get logs from the fixture
-        logs = item.funcargs.get("capture_logs", {"console": [], "network_errors": []})
+        # Determine category based on markers
+        category = "General"
+        if item.get_closest_marker("smoke"): category = "🔥 Smoke"
+        elif item.get_closest_marker("regression"): category = "🔄 Regression"
+        elif item.get_closest_marker("security"): category = "🛡️ Security"
+        elif item.get_closest_marker("api"): category = "📡 API"
         
-        if (report.skipped and xfail) or (report.failed and not xfail):
-            # 1. Capture Screenshot as POC
+        # Add Category to report metadata
+        extra.append(pytest_html.extras.text(f"Category: {category}"))
+
+        if report.failed:
+            # 1. POC Capture
             page = item.funcargs.get("page")
-            screenshot_html = ""
             if page:
                 screenshot_dir = "reports/screenshots"
                 os.makedirs(screenshot_dir, exist_ok=True)
-                file_name = f"{item.name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
-                screenshot_path = os.path.join(screenshot_dir, file_name)
-                page.screenshot(path=screenshot_path)
-                screenshot_html = f'<div><p><b>POC (Proof of Concept):</b></p><img src="screenshots/{file_name}" alt="screenshot" style="width:600px; border: 2px solid red;" onclick="window.open(this.src)"/></div>'
+                file_name = f"{item.name}.png"
+                page.screenshot(path=os.path.join(screenshot_dir, file_name))
+                extra.append(pytest_html.extras.html(
+                    f'<div style="margin:10px 0;"><b>📸 Visual Proof (POC):</b><br>'
+                    f'<img src="screenshots/{file_name}" style="width:500px;border:3px solid #ff4d4d;border-radius:8px;" onclick="window.open(this.src)"></div>'
+                ))
+
+            # 2. AI Failure Diagnosis
+            logs = item.funcargs.get("capture_logs", {"console": [], "network_errors": []})
+            error_details = str(report.longreprtext)
+            combined_context = f"Console: {logs['console']}\nNetwork: {logs['network_errors']}"
+            ai_report = ai_service.analyze_failure(None, combined_context, error_details)
             
-            # 2. Format Console and Network Logs
-            console_log_str = "\n".join(logs["console"][-20:]) # Last 20 logs
-            network_log_str = "\n".join(logs["network_errors"][-20:])
-            
-            log_html = f"""
-            <div style="background-color: #f1f1f1; padding: 10px; border: 1px solid #ccc; margin-top: 10px; font-family: monospace; font-size: 12px;">
-                <h5 style="margin-top: 0;">🌐 Network & Console Audit</h5>
-                <p><b>Recent Console Logs:</b></p>
-                <pre>{console_log_str or "No console logs captured."}</pre>
-                <p><b>Network Errors/Failures:</b></p>
-                <pre style="color: #dc3545;">{network_log_str or "No network errors detected."}</pre>
+            # High-impact AI Box
+            ai_box = f"""
+            <div style="background: linear-gradient(135deg, #6e8efb, #a777e3); color: white; padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <h3 style="margin-top: 0; display: flex; align-items: center;">🤖 AI Autonomous QA Engineer - Diagnosis</h3>
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.3); margin: 10px 0;">
+                <div style="font-size: 15px; line-height: 1.6;">
+                    {ai_report.replace('\n', '<br>')}
+                </div>
+                <div style="margin-top: 15px; font-size: 12px; opacity: 0.8; font-style: italic;">
+                    * This analysis was generated autonomously by analyzing browser traces, network traffic, and DOM state.
+                </div>
             </div>
             """
-            
-            # 3. AI Failure Analysis (including logs)
-            error_msg = str(report.longreprtext)
-            combined_logs = f"Console:\n{console_log_str}\nNetwork:\n{network_log_str}"
-            ai_analysis = ai_service.analyze_failure(None, combined_logs, error_msg)
-            
-            ai_html = f"""
-            <div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-top: 10px; border: 1px solid #f5c6cb;">
-                <h4 style="margin-top: 0;">🤖 AI Autonomous Insights</h4>
-                <p><b>Analysis:</b> {ai_analysis}</p>
-                <p><small>Analyzed by local TinyLlama model.</small></p>
+            extra.append(pytest_html.extras.html(ai_box))
+
+            # 3. Technical Audit
+            audit_html = f"""
+            <div style="background: #fdf2f2; border-left: 5px solid #f87171; padding: 15px; margin: 10px 0;">
+                <b style="color: #991b1b;">🌐 Technical Audit Logs:</b>
+                <pre style="white-space: pre-wrap; font-size: 11px;">{"".join(logs['console'][-10:]) or "No console logs."}</pre>
+                <hr>
+                <b style="color: #991b1b;">📡 Network Failures:</b>
+                <pre style="white-space: pre-wrap; font-size: 11px; color: #dc2626;">{"".join(logs['network_errors']) or "No network errors."}</pre>
             </div>
             """
-            
-            # 4. Add to report
-            extra.append(pytest_html.extras.html(ai_html))
-            extra.append(pytest_html.extras.html(log_html))
-            if screenshot_html:
-                extra.append(pytest_html.extras.html(screenshot_html))
-                
-        report.extra = extra
+            extra.append(pytest_html.extras.html(audit_html))
+
+    report.extra = extra
 
 def pytest_html_report_title(report):
-    report.title = "🚀 Autonomous AI Testing Dashboard"
+    report.title = "🎯 AI-Powered Quality Assurance Intelligence Report"
 
 def pytest_html_results_summary(prefix, summary, postfix):
-    prefix.extend([f"<h3>Environment: Production/Staging</h3>"])
-    prefix.extend([f"<p>This report contains automated E2E, API, and Security validation results with AI-powered failure categorization and Network/Console audit.</p>"])
+    prefix.extend([
+        """
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+            <h2 style="color: #166534; margin-top: 0;">✅ Executive Summary</h2>
+            <p>This report was generated by the <b>Antigravity AI Automation Engine</b>. It combines Playwright browser automation with local <b>TinyLlama AI</b> to provide not just results, but deep technical investigations into every failure.</p>
+            <ul style="color: #166534; font-weight: bold;">
+                <li>🟢 Green: Passed - Feature is stable</li>
+                <li>🔴 Red: Failed - AI Investigation attached</li>
+                <li>🟡 Yellow: Warning - Environment/Network issues detected</li>
+            </ul>
+        </div>
+        """
+    ])
 
 def pytest_configure(config):
-    config._metadata['Project Name'] = 'SauceDemo AI Automation'
-    config._metadata['Tester'] = 'AI QA Agent'
-    config._metadata['Framework'] = 'Playwright + Python + Ollama'
+    config._metadata['AI Engine'] = 'Active (Local TinyLlama)'
+    config._metadata['Autonomous Level'] = 'Level 3 - Diagnostic'
