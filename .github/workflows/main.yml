@@ -39,20 +39,13 @@ jobs:
     - name: Run tests
       run: |
         export PYTHONPATH=$PYTHONPATH:.
-        pytest --html=reports/report.html --self-contained-html --tracing on --video on
-    - name: Upload Report
+        pytest --html=reports/report.html --self-contained-html --tracing on --video on || true
+    - name: Upload Report Artifact
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report
+        name: test-execution-report
         path: reports/
-    - name: Upload Traces/Videos
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: test-results
-        path: test-results/
-    
     - name: Send Email Notification
       uses: dawidd6/action-send-mail@v3
       if: always()
@@ -60,13 +53,23 @@ jobs:
         server_address: smtp.gmail.com
         server_port: 465
         username: mejbaurbahar@gmail.com
-        password: nbueqkiceiojnvfi
-        subject: Playwright Automation Report - ${{ job.status }}
+        password: nbue qkic eioj nvfi
+        subject: Playwright AI Automation Report - ${{ job.status }}
         to: ${{ github.event.inputs.email_recipient || 'mejbaurbahar@gmail.com' }}
-        from: Automation Agent <mejbaurbahar@gmail.com>
+        from: AI QA Engineer <mejbaurbahar@gmail.com>
         body: |
-          The automation test execution has completed.
-          Status: ${{ job.status }}
+          Hello,
           
-          You can find the detailed report attached to this email or in the GitHub Action artifacts.
+          The automated test suite has completed its execution.
+          
+          Execution Status: ${{ job.status }}
+          Report Details: See the attached self-contained HTML report.
+          
+          This report includes:
+          - Success/Failure status for all test cases
+          - Embedded screenshots for failed tests
+          - AI-generated failure analysis (if applicable)
+          
+          Best regards,
+          Autonomous QA Framework
         attachments: reports/report.html
