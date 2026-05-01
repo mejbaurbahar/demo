@@ -86,4 +86,3 @@ The report includes:
 - **Trace Files**: Step-by-step recording of the failure.
 
 ---
-Built by Antigravity AI Assistant.
