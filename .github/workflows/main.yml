@@ -46,30 +46,10 @@ jobs:
       with:
         name: test-execution-report
         path: reports/
-    - name: Send Email Notification
-      uses: dawidd6/action-send-mail@v3
+    - name: Send Email Notification (Python)
       if: always()
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: mejbaurbahar@gmail.com
-        password: nbue qkic eioj nvfi
-        subject: Playwright AI Automation Report - ${{ job.status }}
-        to: ${{ github.event.inputs.email_recipient || 'mejbaurbahar@gmail.com' }}
-        from: AI QA Engineer <mejbaurbahar@gmail.com>
-        body: |
-          Hello,
-          
-          The automated test suite has completed its execution.
-          
-          Execution Status: ${{ job.status }}
-          Report Details: See the attached self-contained HTML report.
-          
-          This report includes:
-          - Success/Failure status for all test cases
-          - Embedded screenshots for failed tests
-          - AI-generated failure analysis (if applicable)
-          
-          Best regards,
-          Autonomous QA Framework
-        attachments: reports/report.html
+      run: |
+        python utils/send_report.py
+      env:
+        RECEIVER_EMAIL: ${{ github.event.inputs.email_recipient || 'mejbaurbahar@gmail.com' }}
+        JOB_STATUS: ${{ job.status }}
