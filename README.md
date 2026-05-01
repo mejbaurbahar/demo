@@ -1,35 +1,48 @@
-# AI-Powered Autonomous Automation Testing Framework
+# 🚀 Autonomous AI-Powered QA Automation Framework
 
-This is a production-ready, scalable automation ecosystem built with **Playwright (Python)**, **GitHub Actions**, and **AI-assisted testing** capabilities.
+A state-of-the-art, production-ready automation ecosystem built with **Playwright**, **Python**, and **Local AI (Ollama)**. This framework is designed to behave like an autonomous QA engineer—capable of running tests, understanding failures, and providing intelligent reporting with zero manual intervention.
 
-## 🚀 Features
+---
 
-- **End-to-End Testing**: Modular Page Object Model (POM) architecture.
-- **AI-Powered Analysis**: Integrated with AI models (DeepSeek, Ollama, Qwen) for:
-  - Failure root cause analysis.
-  - Bug summary generation.
-  - Self-healing locator suggestions.
-- **Security & SSL Monitoring**: Automated checks for security headers and SSL certificate expiry.
-- **API Testing**: Integrated REST API validation.
-- **CI/CD Ready**: Pre-configured GitHub Actions for nightly regressions and PR checks.
-- **Comprehensive Reporting**: HTML reports with embedded screenshots, videos, and Playwright traces.
-- **Dockerized**: Easy execution in any environment using Docker.
+## 🤖 How the AI Engine Works
 
-## 🛠️ Project Structure
+This framework features a "Brain" layer that integrates directly with local AI models (like TinyLlama) via **Ollama**. Here is the autonomous workflow:
 
-```text
-saucedemo_automation/
-├── .github/workflows/    # CI/CD pipelines
-├── components/           # AI, Reporting, Notifications
-├── pages/                # Page Object Model (POM)
-├── tests/                # E2E, API, Security tests
-├── utils/                # Config, Helpers, Logger
-├── docker/               # Docker configuration
-├── requirements.txt      # Dependencies
-└── pytest.ini            # Test configuration
-```
+1.  **Detection**: When a test fails, the framework immediately captures the **Full Trace**, **Console Logs**, and a **High-Resolution Screenshot (POC)**.
+2.  **Analysis**: The error context is fed into the local AI model. The AI "reads" the failure just like a human engineer would.
+3.  **Diagnosis**: The AI determines if the failure is a **Functional Bug**, a **Synchronization Issue (Timeout)**, or a **UI Change**.
+4.  **Reporting**: The AI writes a human-readable investigation report, including a **Root Cause** and a **Suggested Fix**, which is injected directly into your HTML Dashboard.
 
-## ⚙️ Setup & Installation
+**Zero-Key Architecture**: Unlike other tools, this uses **Local AI**. It requires **No API Keys** (OpenAI/DeepSeek), ensuring 100% data privacy and $0 operational costs.
+
+---
+
+## ✨ Core Features
+
+### 1. Autonomous Failure Analysis (AFA)
+- **What it is**: A system that replaces manual log checking.
+- **How it works**: Uses NLP to categorize errors and provide debugging recommendations automatically in every report.
+
+### 2. Intelligent Reporting & POC
+- **What it is**: A stakeholder-ready HTML dashboard.
+- **How it works**: Generates a self-contained report with embedded screenshots, AI insights, and color-coded categorizations (Smoke, Security, API, Regression).
+
+### 3. Automated Security Scanner
+- **OWASP Validation**: Built-in checks for **XSS (Cross-Site Scripting)** and **SQL Injection (SQLi)** vulnerabilities.
+- **SSL Monitoring**: Automatically alerts the team if SSL certificates are expiring within 30 days.
+- **Security Headers**: Validates the presence of critical security headers to protect against clickjacking and MIME-sniffing.
+
+### 4. Self-Healing Locator Handling (Experimental)
+- **How it works**: On failure, the AI analyzes the page's HTML structure to suggest stable alternative selectors, reducing maintenance time.
+
+### 5. Multi-Layer Automation
+- **UI Testing**: End-to-End flows (Login, Cart, Checkout, Logout).
+- **API Testing**: Validates backend endpoints for status, schema, and performance.
+- **Mobile Emulation**: Supports testing on different viewports and mobile browser engines.
+
+---
+
+## 🛠️ Setup & Installation
 
 1. **Clone the repository**:
    ```bash
@@ -43,32 +56,34 @@ saucedemo_automation/
    playwright install
    ```
 
-3. **Run tests**:
+3. **Run All Tests**:
    ```bash
    pytest
    ```
 
-## 🤖 AI Integration
+4. **Run Specific Suite**:
+   ```bash
+   pytest tests/test_security.py -m security
+   ```
 
-To enable AI failure analysis, set your API key:
-```bash
-export AI_API_KEY="your-api-key"
-```
-Or for local Ollama:
-1. Install [Ollama](https://ollama.ai/).
-2. Pull a model: `ollama pull deepseek-coder`.
-3. The framework will automatically detect and use local models if configured in `components/ai_service.py`.
+---
 
-## 🐳 Docker Execution
+## ☁️ CI/CD Integration
 
-```bash
-docker build -t automation-framework -f docker/Dockerfile .
-docker run -v $(pwd)/reports:/app/reports automation-framework
-```
+The framework is fully integrated with **GitHub Actions**. On every push:
+1. It provisions a Linux environment.
+2. It installs and launches **Ollama** locally.
+3. It executes the full test suite.
+4. It **Emails a detailed HTML Report** to the stakeholders using your secure Gmail bridge.
 
-## 📊 Reporting
+---
 
-Reports are generated in the `reports/` directory. Open `report.html` in any browser to view detailed execution logs, screenshots, and AI analysis.
+## 📊 Sample Report Preview
+The report includes:
+- **Status Summary**: Pass/Fail/Skip counts.
+- **AI Investigation**: Root cause analysis per failure.
+- **Screenshots**: Visual proof for every error.
+- **Trace Files**: Step-by-step recording of the failure.
 
 ---
 Built by Antigravity AI Assistant.
