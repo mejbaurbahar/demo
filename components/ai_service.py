@@ -65,11 +65,22 @@ class AIService:
             analysis += "**POC Explanation:** The system waited for an element that never appeared. The screenshot shows the current page state, which might be an intermediate loading state or a wrong page.\n"
             analysis += "**Recommendation:** Check if the element selector has changed or increase the wait timeout."
         
-        # 5. Auth/Validation
-        elif "not match" in error_lower or "epic sadface" in error_lower:
-            analysis += "**Root Cause:** Authentication or Input Validation Failure.\n"
-            analysis += "**POC Explanation:** The credentials or form data provided were rejected by the application logic.\n"
-            analysis += "**Recommendation:** If this is a positive test, verify the test credentials; if negative, the system is behaving as expected."
+        # 5. Auth/Validation / Missing Data
+        elif "not match" in error_lower or "epic sadface" in error_lower or "keyerror" in error_lower:
+            analysis += "**Root Cause:** Authentication, Validation, or Missing Test Data.\n"
+            if "keyerror" in error_lower:
+                analysis += "**POC Explanation:** The test tried to access a data field that was not found in the input payload/dictionary.\n"
+                analysis += "**Recommendation:** Verify the test data source and ensure all required fields (e.g., username, zip) are provided."
+            else:
+                analysis += "**POC Explanation:** The credentials or form data provided were rejected by the application logic.\n"
+                analysis += "**Recommendation:** If this is a positive test, verify the test credentials; if negative, the system is behaving as expected."
+        
+        # 7. Blockers
+        elif "blocked" in error_lower or "access denied" in error_lower:
+            analysis += "**Root Cause:** Test Case Blocked by Environment/Permissions.\n"
+            analysis += "**POC Explanation:** The application or environment is preventing the test from proceeding (e.g., IP block, firewall, or maintenance mode).\n"
+            analysis += "**Recommendation:** Check environment health and user permissions."
+
         
         # 6. Assertion Logic
         elif "assertionerror" in error_lower:
@@ -93,10 +104,34 @@ class AIService:
         except Exception as e:
             return f"AI API Error: {str(e)}"
 
-    def suggest_new_locator(self, html_snippet, target_element_description):
+    def suggest_new_locator(self, html_snippet, target_element_description, error_message):
         """
-        AI-assisted locator handling (Self-healing).
+        AI-assisted self-healing: Suggests a new stable locator based on the current HTML state.
         """
-        prompt = f"Given this HTML: {html_snippet}, find a stable CSS or ID selector for: {target_element_description}"
-        # AI would return a selector
-        return "#suggested-id"
+        prompt = f"""
+        CRITICAL FAILURE: A test failed to find an element.
+        Target Element Description: {target_element_description}
+        Last Error: {error_message}
+        
+        HTML Context (Snippet):
+        {html_snippet[:2000]}
+        
+        TASK:
+        Find the most stable CSS or ID selector for the target element in the provided HTML.
+        Return ONLY the selector string (e.g., "#login-button" or ".submit-btn").
+        If no match is found, return "FAILED".
+        """
+        
+        try:
+            response = requests.post(f"{self.base_url}/api/generate", 
+                                     json={"model": self.model, "prompt": prompt, "stream": False},
+                                     timeout=15)
+            if response.status_code == 200:
+                suggestion = response.json().get("response", "").strip()
+                if suggestion and suggestion != "FAILED":
+                    return suggestion
+        except Exception:
+            pass
+        
+        return None
+

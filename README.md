@@ -51,10 +51,13 @@ This framework is engineered to provide 360-degree quality assurance. Below are 
 ---
 
 ## 🧠 Autonomous AI Engine (AFA)
-The framework features a **Level 4 Autonomous AI Engine** that works at its best to simplify debugging:
-- **Context-Aware Analysis**: The AI understands if it's looking at an Accessibility failure vs a Performance regression.
-- **Smart Heuristics**: Even if the local LLM is offline, a built-in expert system provides high-fidelity diagnosis.
-- **Visual POC**: Every failure is automatically linked to a screenshot and a root-cause explanation.
+The framework features a **Level 4 Autonomous AI Engine** that provides advanced self-healing and proactive troubleshooting:
+-   **Self-Healing Locators**: If a UI selector fails, the AI automatically analyzes the live HTML, suggests a new stable selector, and **retries the action in real-time** without failing the test.
+-   **Automatic Data Loss Detection**: Detects missing test data or `KeyError` exceptions, pinpointing exactly which field is missing and suggesting the proper fix.
+-   **Context-Aware Analysis**: Distinguishes between Accessibility failures, Performance regressions, and Environment blockers.
+-   **Smart Heuristics**: Built-in expert system provides high-fidelity diagnosis even in air-gapped CI environments.
+-   **Visual POC**: Every failure is automatically linked to a screenshot and a root-cause explanation.
+
 
 
 ---
