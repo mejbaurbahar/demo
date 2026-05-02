@@ -62,8 +62,10 @@ class AIService:
             "HEALER": f"Self-Healing: The locator failed. Current HTML: {task_context}. Find a stable alternative using relationship graphs.",
             "RCA": f"Root Cause Analysis: Error: {task_context}. Explain why it happened and suggest a technical fix.",
             "LEARNER": f"Memory Audit: Analyze previous runs {task_context}. Predict where the next bug might appear.",
-            "PREDICTOR": f"Strategy Forecast: Based on these results {task_context}, what are the 3 most critical next actions to maximize release confidence?"
+            "PREDICTOR": f"Strategy Forecast: Based on these results {task_context}, what are the 3 most critical next actions to maximize release confidence?",
+            "GAP_ANALYZER": f"Coverage Audit: Existing tests cover {task_context['existing']}. UI contains {task_context['elements']}. Identify 5 critical missing scenarios (edge cases, security, data mutation)."
         }
+
 
         
         prompt = f"ACT AS A {agent_role} AGENT. Task: {prompts.get(agent_role, task_context)}"

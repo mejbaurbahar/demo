@@ -57,7 +57,9 @@ This ecosystem has achieved **Level 5 Autonomy**, functioning as a **Digital QA 
 
 ### 🎭 Multi-Agent Collaborative Intelligence
 - **🕵️ Explorer Agent**: Independently crawls the UI, builds relationship graphs, and learns business flows.
+- **🤖 Autonomous QA Engineer**: **NEW!** Scans your existing repository to identify testing gaps, then dynamically generates and executes missing scenarios (Security, Edge-case, UX) in real-time.
 - **🪄 Generator Agent**: Dynamically creates test strategies, scenarios, and mutated test data in real-time.
+
 - **🛡️ Security Agent**: Performs offensive audits, predicting and testing for complex vulnerabilities (IDOR, Race conditions, SQLi).
 - **🩹 Healing Agent**: Automatically recovers broken locators and regenerates selector repositories.
 - **🧠 RCA Agent**: Performs deep-root cause analysis with historical context.
