@@ -26,6 +26,9 @@ class CheckoutStepTwo(BasePage):
     def __init__(self, page):
         super().__init__(page)
         self.finish_button = "id=finish"
+        self.subtotal_label = ".summary_subtotal_label"
+        self.total_label = ".summary_total_label"
+
 
     def click_finish(self):
         self.click(self.finish_button)

@@ -48,3 +48,40 @@ def test_saucedemo_full_flow(page):
     # 11. Logout
     inventory_page.logout()
     assert login_page.is_visible(login_page.login_button)
+@pytest.mark.functional
+def test_multi_item_complex_checkout(page):
+    """
+    Complex Functional Test: Multiple items, cart modification, and total price verification.
+    """
+    login_page = LoginPage(page)
+    inventory_page = InventoryPage(page)
+    cart_page = CartPage(page)
+    checkout_one = CheckoutStepOne(page)
+    checkout_two = CheckoutStepTwo(page)
+
+    login_page.navigate("https://www.saucedemo.com/")
+    login_page.login("standard_user", "secret_sauce")
+
+    # Add 3 items
+    inventory_page.add_to_cart("Sauce Labs Backpack")
+    inventory_page.add_to_cart("Sauce Labs Bike Light")
+    inventory_page.add_to_cart("Sauce Labs Bolt T-Shirt")
+
+    # Go to cart and verify count
+    inventory_page.go_to_cart()
+    assert "3" in page.inner_text(".shopping_cart_link")
+
+    # Remove one item in cart
+    page.click("id=remove-sauce-labs-bike-light")
+    assert "2" in page.inner_text(".shopping_cart_link")
+
+    # Checkout
+    cart_page.click_checkout()
+    checkout_one.fill_form("Agent", "AI", "9999")
+    
+    # Verify subtotal (Backpack 29.99 + T-Shirt 15.99 = 45.98)
+    subtotal_text = checkout_two.get_text(checkout_two.subtotal_label)
+    assert "45.98" in subtotal_text
+    
+    checkout_two.click_finish()
+    assert "Thank you" in page.inner_text(".complete-header")

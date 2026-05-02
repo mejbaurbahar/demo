@@ -59,7 +59,8 @@ This framework has evolved into a **Level 4 Autonomous Ecosystem** powered by a 
 - **🧠 RCA Agent**: Performs deep Root Cause Analysis, linking failures to patterns in its memory.
 - **🩹 Healing Agent**: Automatically recovers broken UI locators in real-time using live HTML analysis.
 - **🕵️ Security Agent**: Conducts adaptive vulnerability audits, suggesting mutation payloads for XSS/SQLi.
-- **🪄 Generator Agent**: **NEW!** Automatically reads existing scripts and brainstorms advanced test cases (negative, edge-case, and boundary) to ensure 100% bug detection.
+- **🪄 Generator Agent**: **AI Thinking!** Automatically reads existing scripts and brainstorms advanced test cases (negative, edge-case, and boundary) to ensure 100% bug detection.
+
 - **📉 Performance Agent**: Detects latency bottlenecks and optimizes execution timing.
 - **📝 Reporting Agent**: Generates stakeholder-ready dashboards with visual POCs and technical audits.
 
