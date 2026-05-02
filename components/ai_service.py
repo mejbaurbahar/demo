@@ -38,24 +38,52 @@ class AIService:
     def _heuristic_analysis(self, error, logs):
         """Rule-based engine that acts as a lightweight AI for CI environments."""
         analysis = "### 🔍 Failure Investigation\n"
-        if "timeout" in error.lower():
-            analysis += "**Root Cause:** The system waited for an element that never appeared (Timeout).\n"
-            analysis += "**POC Explanation:** The screenshot shows the page state when the timeout occurred. It likely failed because of a slow network or a change in the application UI.\n"
-            analysis += "**Recommendation:** Check if the element selector has changed or increase the synchronization timeout."
-        elif "not match" in error.lower() or "Epic sadface" in error:
-            analysis += "**Root Cause:** Authentication or Validation Error.\n"
-            analysis += "**POC Explanation:** The application correctly rejected the input as per the test scenario (Negative Testing).\n"
-            analysis += "**Recommendation:** If this was a valid login attempt, verify the credentials in the test data."
-        elif "AssertionError" in error:
-            analysis += "**Root Cause:** Logic Mismatch (Assertion Failed).\n"
-            analysis += "**POC Explanation:** The actual value on the screen did not match the expected value defined in the test script.\n"
-            analysis += "**Recommendation:** Verify if the business logic has changed or if there is a functional bug."
+        error_lower = error.lower()
+        logs_lower = str(logs).lower()
+
+        # 1. Accessibility Checks
+        if "accessibility" in logs_lower or "violations" in error_lower:
+            analysis += "**Root Cause:** Accessibility (A11y) Compliance Violation.\n"
+            analysis += "**POC Explanation:** The page contains elements that do not meet WCAG standards (e.g., missing ARIA labels, low contrast, or missing alt text).\n"
+            analysis += "**Recommendation:** Review the accessibility report and ensure all interactive elements have descriptive labels."
+        
+        # 2. Performance Checks
+        elif "too slow" in error_lower or "duration" in error_lower or "benchmark" in logs_lower:
+            analysis += "**Root Cause:** Performance Regression / Latency Issues.\n"
+            analysis += "**POC Explanation:** The action took longer than the defined threshold. This could be due to heavy assets, unoptimized database queries, or server load.\n"
+            analysis += "**Recommendation:** Optimize page assets or investigate backend response times."
+
+        # 3. API Failures
+        elif "status_code" in error_lower or "requests.exceptions" in error_lower:
+            analysis += "**Root Cause:** Backend API Integration Error.\n"
+            analysis += "**POC Explanation:** The service received an unexpected response from the API (e.g., 401 Unauthorized or 500 Server Error).\n"
+            analysis += "**Recommendation:** Verify API endpoint availability and authentication tokens."
+
+        # 4. Standard UI Timeouts
+        elif "timeout" in error_lower:
+            analysis += "**Root Cause:** Element Synchronization Timeout.\n"
+            analysis += "**POC Explanation:** The system waited for an element that never appeared. The screenshot shows the current page state, which might be an intermediate loading state or a wrong page.\n"
+            analysis += "**Recommendation:** Check if the element selector has changed or increase the wait timeout."
+        
+        # 5. Auth/Validation
+        elif "not match" in error_lower or "epic sadface" in error_lower:
+            analysis += "**Root Cause:** Authentication or Input Validation Failure.\n"
+            analysis += "**POC Explanation:** The credentials or form data provided were rejected by the application logic.\n"
+            analysis += "**Recommendation:** If this is a positive test, verify the test credentials; if negative, the system is behaving as expected."
+        
+        # 6. Assertion Logic
+        elif "assertionerror" in error_lower:
+            analysis += "**Root Cause:** Functional Logic Mismatch (Assertion Failed).\n"
+            analysis += "**POC Explanation:** The actual value observed in the application did not match the expected value defined in the test case.\n"
+            analysis += "**Recommendation:** Compare the expected vs actual values in the logs to identify the functional discrepancy."
+        
         else:
-            analysis += f"**Root Cause:** General System Exception.\n"
-            analysis += f"**Details:** {error[:200]}...\n"
-            analysis += "**Recommendation:** Technical debug required by the QA team."
+            analysis += "**Root Cause:** General System Exception / Unhandled Error.\n"
+            analysis += f"**Details Snippet:** {error[:150]}...\n"
+            analysis += "**Recommendation:** A manual review by the QA engineering team is required for this unique failure pattern."
         
         return analysis
+
 
     def _call_openai_compatible(self, prompt):
         # OpenAI/DeepSeek/Qwen logic

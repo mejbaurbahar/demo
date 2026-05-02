@@ -81,8 +81,18 @@ def pytest_runtest_makereport(item, call):
                 # 2. AI Failure Diagnosis
                 logs = item.funcargs.get("capture_logs", {"console": [], "network_errors": []})
                 error_details = str(report.longreprtext)
-                combined_context = f"Console: {logs.get('console', [])}\nNetwork: {logs.get('network_errors', [])}"
+                
+                # Extract markers for AI context
+                markers = [mark.name for mark in item.iter_markers()]
+                test_context = {
+                    "test_name": item.name,
+                    "markers": markers,
+                    "stage": report.when
+                }
+                
+                combined_context = f"Test Context: {test_context}\nConsole: {logs.get('console', [])}\nNetwork: {logs.get('network_errors', [])}"
                 ai_report = ai_service.analyze_failure(None, combined_context, error_details)
+
                 
                 ai_report_html = str(ai_report).replace('\n', '<br>')
                 ai_box = f"""

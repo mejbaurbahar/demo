@@ -35,19 +35,26 @@ This framework features a "Brain" layer that integrates directly with local AI m
 ### 4. Self-Healing Locator Handling (Experimental)
 - **How it works**: On failure, the AI analyzes the page's HTML structure to suggest stable alternative selectors, reducing maintenance time.
 
-### 5. Multi-Layer Automation & Extensive Test Coverage
-This framework now supports over **50+ types of testing** categorized logically:
+### 5. 🛡️ Comprehensive Testing Coverage (50+ Types)
+This framework is engineered to provide 360-degree quality assurance. Below are the testing types implemented and supported:
 
--   **Functional Testing**: 
-    -   *Smoke, Sanity, Regression, Retesting, Integration, System, E2E, UAT, Alpha, Beta.*
--   **Structural & Black Box**: 
-    -   *Boundary Value Analysis, Equivalence Partitioning, Positive/Negative Testing, White Box, Gray Box.*
--   **Non-Functional Testing**: 
-    -   *Performance (Load, Stress, Benchmark), Security (Vulnerability, SQLi, XSS), Usability/UX, Accessibility (A11y), Reliability, Resilience, Chaos.*
--   **Compatibility & Mobile**: 
-    -   *Cross-Browser, Cross-Platform, Responsive Design, Mobile Emulation, Localization (l10n), Internationalization (i18n).*
--   **Specialized Testing**: 
-    -   *API Testing, Exploratory, Ad-hoc, Monkey Testing.*
+| Category | Testing Types Covered | Description |
+| :--- | :--- | :--- |
+| **Functional** | Smoke, Sanity, Regression, Retesting, Integration, System, E2E, UAT | Validates core business flows and ensure no regressions occur after code changes. |
+| **Structural** | Black Box, White Box, Gray Box, Boundary Value, Equivalence Partitioning | Uses mathematical validation techniques to ensure input field integrity. |
+| **Non-Functional** | Performance, Load, Stress, Benchmark, Scalability, Stability | Monitors system behavior under load and measures action latency. |
+| **Security** | Vulnerability, Penetration, SQL Injection, XSS, Auth/Authz, SSL | Automated scans for OWASP Top 10 vulnerabilities and secure header validation. |
+| **Quality of Experience**| Usability, UX, Accessibility (WCAG), Localization (i18n/l10n) | Ensures the app is accessible to all users and works across different locales. |
+| **Compatibility** | Cross-Browser, Cross-Platform, Responsive, Mobile Emulation | Validates UI consistency across Chrome, Firefox, Safari, and Mobile viewports. |
+| **Specialized** | API Testing, Exploratory, Ad-hoc, Monkey, Chaos, Resilience | Backend validation and stability testing under unpredictable conditions. |
+
+---
+
+## 🧠 Autonomous AI Engine (AFA)
+The framework features a **Level 4 Autonomous AI Engine** that works at its best to simplify debugging:
+- **Context-Aware Analysis**: The AI understands if it's looking at an Accessibility failure vs a Performance regression.
+- **Smart Heuristics**: Even if the local LLM is offline, a built-in expert system provides high-fidelity diagnosis.
+- **Visual POC**: Every failure is automatically linked to a screenshot and a root-cause explanation.
 
 
 ---
