@@ -2,7 +2,9 @@ import pytest
 from playwright.sync_api import Page
 import os
 from datetime import datetime
+import json
 from components.ai_service import AIService
+
 
 # Initialize AI Service
 ai_service = AIService()
@@ -21,9 +23,10 @@ def capture_logs(page: Page):
     logs = {"console": [], "network_errors": []}
     try:
         page.on("console", lambda msg: logs["console"].append(f"[{msg.type}] {msg.text}"))
-        page.on("requestfailed", lambda request: logs["network_errors"].append(
-            f"URL: {request.url} | Error: {request.failure.error_text if request.failure else 'Unknown error'}"
+        page.on("requestfailed", lambda req: logs["network_errors"].append(
+            f"URL: {req.url} | Error: {getattr(req, 'failure', 'Unknown error')}"
         ))
+
         page.on("response", lambda response: logs["network_errors"].append(
             f"URL: {response.url} | Status: {response.status}"
         ) if response.status >= 400 else None)

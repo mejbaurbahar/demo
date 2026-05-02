@@ -52,4 +52,7 @@ jobs:
         python utils/send_report.py
       env:
         RECEIVER_EMAIL: ${{ github.event.inputs.email_recipient || 'mejbaurbahar@gmail.com' }}
+        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
         JOB_STATUS: ${{ job.status }}
+

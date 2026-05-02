@@ -8,6 +8,8 @@ class InventoryPage(BasePage):
         self.cart_link = ".shopping_cart_link"
         self.burger_menu = "id=react-burger-menu-btn"
         self.logout_link = "id=logout_sidebar_link"
+        self.inventory_list = ".inventory_list"
+
 
     def add_to_cart(self, product_name: str):
         selector = f"id=add-to-cart-{product_name.lower().replace(' ', '-')}"

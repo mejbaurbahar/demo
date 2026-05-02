@@ -10,8 +10,9 @@ def send_email():
     # Configuration
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
-    sender_email = "mejbaurbahar@gmail.com"
-    password = "nbue qkic eioj nvfi" # App Password
+    sender_email = os.getenv("SENDER_EMAIL", "mejbaurbahar@gmail.com")
+    password = os.getenv("SENDER_PASSWORD", "nbue qkic eioj nvfi") # Fallback to hardcoded for now, but prioritized env
+
     
     # Recipient from environment or default
     receiver_email = os.getenv("RECEIVER_EMAIL", "mejbaurbahar@gmail.com")
