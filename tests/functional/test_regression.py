@@ -60,12 +60,11 @@ def test_accessibility_audit(page):
     axe = Axe()
     results = axe.run(page)
     
-    # We log violations to the report instead of failing if desired, 
-    # but here we assert for a standard audit.
-    violations = results.violations
+    # In axe-playwright-python, results is a dict containing 'violations'
+    violations = results["violations"] if isinstance(results, dict) else results.violations
     if len(violations) > 0:
         print(f"Accessibility violations found: {len(violations)}")
-        # In a real project, we might fail here: assert len(violations) == 0
+
 
 @pytest.mark.regression
 def test_page_load_performance(page):

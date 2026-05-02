@@ -8,7 +8,28 @@ class AIService:
         self.base_url = base_url
         self.memory = {} # Mock memory for learning failure patterns
 
+    def generate_test_scenarios(self, page_name, existing_selectors):
+        """
+        🚀 Generator Agent: Brainstorms new test scenarios and edge cases.
+        """
+        prompt = f"""
+        ACT AS A SENIOR QA ENGINEER.
+        Page Name: {page_name}
+        Existing Selectors: {existing_selectors}
+        
+        TASK:
+        Generate 5 new advanced test scenarios including edge cases and negative tests.
+        For each scenario, provide:
+        1. Scenario Name
+        2. Description
+        3. Test Data (JSON format)
+        
+        Focus on: Security, Boundary values, and UX anomalies.
+        """
+        return self._call_llm(prompt)
+
     def analyze_failure(self, screenshot_path, logs, error_message):
+
         """
         🚀 Multi-Agent Dispatcher: Routes the failure to specialized agents.
         """
