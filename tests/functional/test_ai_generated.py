@@ -12,14 +12,19 @@ class TestAIGeneratedScenarios:
     """
 
     @pytest.mark.parametrize("scenario, username, password, expected_msg", [
-        ("Exploratory: SQLi Attempt", "' OR '1'='1", "password", "Username and password do not match"),
-        ("Edge: Buffer Overflow Name", "A" * 1000, "secret_sauce", "Products"),
-        ("Security: Script Injection", "<script>alert('xss')</script>", "secret_sauce", "Username and password do not match"),
-        ("Negative: Space-only Username", "   ", "   ", "Username is required"),
-        ("Boundary: Unicode Pass", "standard_user", "密码123", "Username and password do not match")
+        ("SQLi_Attempt", "' OR '1'='1", "password", "Username and password do not match"),
+        ("Buffer_Overflow", "LONG_STRING", "secret_sauce", "Username and password do not match"),
+        ("Script_Injection", "<script>alert('xss')</script>", "secret_sauce", "Username and password do not match"),
+        ("Space_only_Username", "   ", "   ", "Username and password do not match"),
+        ("Unicode_Pass", "standard_user", "密码123", "Username and password do not match")
     ])
+
     def test_ai_login_discoveries(self, page, scenario, username, password, expected_msg):
         """AI-Generated Scenarios for Login Resilience."""
+        # Handle dynamic data generation to avoid long filenames in Windows
+        if username == "LONG_STRING":
+            username = "A" * 1000
+
         login_page = LoginPage(page)
         login_page.navigate("https://www.saucedemo.com/")
         login_page.login(username, password)
@@ -31,11 +36,12 @@ class TestAIGeneratedScenarios:
             assert inventory_page.is_visible(inventory_page.header_title)
 
     @pytest.mark.parametrize("scenario, first, last, zip", [
-        ("Boundary: Empty Checkout", "", "", ""),
-        ("Edge: Multi-Byte Zip", "John", "Doe", "郵便番号"),
-        ("Security: XSS in Address", "<b>John</b>", "Doe", "90210"),
-        ("Negative: Numeric Fields", "12345", "67890", "ABCDE")
+        ("Empty_Checkout", "", "", ""),
+        ("MultiByte_Zip", "John", "Doe", "郵便番号"),
+        ("XSS_in_Address", "<b>John</b>", "Doe", "90210"),
+        ("Numeric_Fields", "12345", "67890", "ABCDE")
     ])
+
     def test_ai_checkout_data_mutation(self, page, scenario, first, last, zip):
         """AI-Generated Test Data Mutations for Checkout Flow."""
         login_page = LoginPage(page)

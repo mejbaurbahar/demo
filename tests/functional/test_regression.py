@@ -60,9 +60,15 @@ def test_accessibility_audit(page):
     axe = Axe()
     results = axe.run(page)
     
-    # In axe-playwright-python, results is a dict containing 'violations'
-    violations = results["violations"] if isinstance(results, dict) else results.violations
+    # Handle various return types from Axe based on version
+    if isinstance(results, dict):
+        violations = results.get("violations", [])
+    else:
+        # Some versions return an object with a .violations or .response attribute
+        violations = getattr(results, "violations", getattr(results, "response", {}).get("violations", []))
+    
     if len(violations) > 0:
+
         print(f"Accessibility violations found: {len(violations)}")
 
 

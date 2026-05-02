@@ -92,8 +92,11 @@ def pytest_runtest_makereport(item, call):
                     try:
                         screenshot_dir = "reports/screenshots"
                         os.makedirs(screenshot_dir, exist_ok=True)
-                        file_name = f"{item.name.replace('[', '_').replace(']', '_')}.png"
+                        # Sanitize filename: remove colons and other invalid chars
+                        safe_name = "".join(c if c.isalnum() or c in ("_", "-") else "_" for c in item.name)
+                        file_name = f"{safe_name}.png"
                         page.screenshot(path=os.path.join(screenshot_dir, file_name))
+
                         extra.append(pytest_html.extras.html(
                             f'<div style="margin:20px 0; padding: 15px; background: #fff5f5; border: 2px solid #feb2b2; border-radius: 12px;">'
                             f'<b style="color: #c53030; font-size: 14px;">📸 Visual Evidence Proof (POC):</b><br>'
