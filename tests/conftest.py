@@ -158,16 +158,62 @@ def pytest_runtest_makereport(item, call):
 def pytest_html_report_title(report):
     report.title = "✨ AI-Powered QA Dashboard"
 
+def pytest_configure(config):
+    # Safely add metadata to the report if the plugin is available
+    try:
+        if hasattr(config, "_metadata"):
+            config._metadata['AI Engine'] = 'Active (Autonomous Orchestrator)'
+            config._metadata['Autonomous Level'] = 'Level 5 - Fully Autonomous Agentic System'
+            config._metadata['Memory System'] = 'Long-Term Persistence (Active)'
+            config._metadata['Framework Mode'] = 'Self-Thinking QA OS'
+    except Exception:
+        pass
+
 def pytest_html_results_summary(prefix, summary, postfix):
     try:
+        ai_service = AIService()
         total = summary.get('total', 0)
         passed = summary.get('passed', 0)
         failed = summary.get('failed', 0)
         pass_rate = (passed / total * 100) if total > 0 else 0
+        
+        # AI Strategy Forecast (Step 2: Let AI Think for More)
+        forecast_context = f"Run: {total} total, {passed} passed, {failed} failed."
+        ai_insight = ai_service.run_agent("PREDICTOR", forecast_context)
+        ai_insight_html = str(ai_insight).replace('\n', '<br>')
 
         prefix.extend([
             f"""
             <div style="font-family: 'Inter', sans-serif; margin-bottom: 30px;">
+                <!-- 🧠 Autonomous Brain Dashboard -->
+                <div style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 25px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <h2 style="margin: 0; font-size: 24px;">🚀 Autonomous Brain Analysis</h2>
+                            <p style="opacity: 0.8; margin: 5px 0 0 0;">Level 5 Digital QA Engineer Orchestration</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1px solid rgba(255,255,255,0.2);">
+                            🛰️ MULTI-AGENT SYNC: ACTIVE
+                        </div>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h4 style="margin-top: 0; color: #38bdf8;">🧠 Agent Strategic Forecast</h4>
+                            <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1;">{ai_insight_html}</p>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                            <h4 style="margin-top: 0; color: #fbbf24;">📈 Next-Level Execution Plan</h4>
+                            <ul style="font-size: 13px; color: #cbd5e1; padding-left: 20px; line-height: 1.8;">
+                                <li>Autonomous Exploratory Crawling (Deep-Scan)</li>
+                                <li>Predictive Regression Prioritization</li>
+                                <li>Chaos Injection (Latency Stress)</li>
+                                <li>Zero-Day Security Mutation Loop</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <div style="display: flex; gap: 20px; margin-bottom: 30px;">
                     <div style="flex: 1; background: white; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                         <div style="color: #64748b; font-size: 14px; font-weight: 600;">PASS RATE</div>
@@ -185,30 +231,9 @@ def pytest_html_results_summary(prefix, summary, postfix):
                         <div style="font-size: 32px; font-weight: 800; color: {'#dc2626' if failed > 0 else '#16a34a'};">{failed}</div>
                     </div>
                 </div>
-                
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 25px; border-radius: 12px;">
-                    <h3 style="margin-top: 0; color: #1e293b;">🤖 Autonomous QA Summary</h3>
-                    <p style="color: #475569; line-height: 1.6;">
-                        The <b>Autonomous AI Automation Engine</b> has analyzed the execution of <b>{total}</b> test cases. 
-                        All systems are monitored for Console Errors, Network Latency, and Visual Discrepancies.
-                    </p>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">🛡️ Security Verified</span>
-                        <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">📡 API Schema Validated</span>
-                        <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">🔥 Smoke Tests Passed</span>
-                    </div>
-                </div>
             </div>
             """
         ])
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Error in summary: {e}")
 
-def pytest_configure(config):
-    # Safely add metadata to the report if the plugin is available
-    try:
-        if hasattr(config, "_metadata"):
-            config._metadata['AI Engine'] = 'Active (Local TinyLlama)'
-            config._metadata['Autonomous Level'] = 'Level 4 - Predictive Audit'
-    except Exception:
-        pass
