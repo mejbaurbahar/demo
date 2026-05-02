@@ -36,23 +36,24 @@ jobs:
         ollama serve &
         sleep 10
         ollama pull tinyllama
-    - name: 🛡️ Step 1: Run Standard Enterprise Tests
+    - name: "🛡️ Step 1: Run Standard Enterprise Tests"
       run: |
         echo "🚀 Initializing Standard Automation Suite..."
         echo "✅ You Have this Old Test case: (Smoke, Sanity, Regression)"
         export PYTHONPATH=$PYTHONPATH:.
         pytest -m "smoke or sanity or regression" --html=reports/standard_report.html --self-contained-html || true
 
-    - name: 🧠 Step 2: Let AI Think for More (Autonomous Generation)
+    - name: "🧠 Step 2: Let AI Think for More (Autonomous Generation)"
       run: |
         echo "🤖 AI is now analyzing existing scripts and page objects..."
         echo "✨ Brainstorming new edge cases, security mutations, and boundary values..."
         pytest -m "ai_generated or automation" --html=reports/ai_generated_report.html --self-contained-html || true
 
-    - name: 🧩 Step 3: Execute Comprehensive Full-Site Audit
+    - name: "🧩 Step 3: Execute Comprehensive Full-Site Audit"
       run: |
         echo "🔍 Running Full-Site Quality Audit (API, UI, Accessibility, Performance)..."
         pytest --html=reports/report.html --self-contained-html --tracing on --video on || true
+
 
     - name: Upload Report Artifact
       uses: actions/upload-artifact@v4
