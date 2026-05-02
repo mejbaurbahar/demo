@@ -32,13 +32,23 @@ def pytest_runtest_makereport(item, call):
 
     try:
         if report.when == "call":
-            # 0. Capture Test Data (Parameters)
+            # 0. Enhanced Input Test Data (Step-like UI)
             params = getattr(item, 'callspec', None).params if hasattr(item, 'callspec') else {}
             if params:
+                param_rows = "".join([
+                    f'<div style="display: flex; border-bottom: 1px solid #f1f5f9; padding: 5px 0;">'
+                    f'<span style="flex: 1; color: #64748b; font-weight: 500;">🔹 {k}:</span>'
+                    f'<span style="flex: 2; color: #1e293b; font-family: monospace;">{v}</span>'
+                    f'</div>' for k, v in params.items()
+                ])
                 param_html = f"""
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin: 10px 0;">
-                    <span style="color: #64748b; font-weight: bold; text-transform: uppercase; font-size: 10px;">📦 Input Test Data</span>
-                    <pre style="font-size: 11px; margin: 5px 0; color: #1e293b;">{str(params)}</pre>
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin: 15px 0; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <div style="background: #f8fafc; padding: 8px 15px; border-bottom: 1px solid #e2e8f0; color: #475569; font-weight: 700; font-size: 11px; text-transform: uppercase;">
+                        📦 Execution Data & Parameters
+                    </div>
+                    <div style="padding: 10px 15px;">
+                        {param_rows}
+                    </div>
                 </div>
                 """
                 extra.append(pytest_html.extras.html(param_html))
@@ -60,9 +70,9 @@ def pytest_runtest_makereport(item, call):
                         file_name = f"{item.name.replace('[', '_').replace(']', '_')}.png"
                         page.screenshot(path=os.path.join(screenshot_dir, file_name))
                         extra.append(pytest_html.extras.html(
-                            f'<div style="margin:15px 0; padding: 10px; background: #fff5f5; border: 1px solid #feb2b2; border-radius: 8px;">'
-                            f'<b style="color: #c53030;">📸 Visual Evidence (POC):</b><br>'
-                            f'<img src="screenshots/{file_name}" style="width:100%; max-width:600px; border: 3px solid #f56565; border-radius:8px; margin-top:10px;" onclick="window.open(this.src)">'
+                            f'<div style="margin:20px 0; padding: 15px; background: #fff5f5; border: 2px solid #feb2b2; border-radius: 12px;">'
+                            f'<b style="color: #c53030; font-size: 14px;">📸 Visual Evidence Proof (POC):</b><br>'
+                            f'<img src="screenshots/{file_name}" style="width:100%; max-width:700px; border: 4px solid #f56565; border-radius:12px; margin-top:12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);" onclick="window.open(this.src)">'
                             f'</div>'
                         ))
                     except Exception:
@@ -76,7 +86,7 @@ def pytest_runtest_makereport(item, call):
                 
                 ai_report_html = str(ai_report).replace('\n', '<br>')
                 ai_box = f"""
-                <div style="background: linear-gradient(135deg, #4f46e5, #9333ea); color: white; padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);">
+                <div style="background: linear-gradient(135deg, #4f46e5, #9333ea); color: white; padding: 20px; border-radius: 12px; margin: 20px 0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);">
                     <h3 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">🤖 AI Autonomous QA Diagnosis</h3>
                     <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.2); margin: 15px 0;">
                     <div style="font-size: 15px; line-height: 1.6; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
@@ -88,6 +98,19 @@ def pytest_runtest_makereport(item, call):
                 </div>
                 """
                 extra.append(pytest_html.extras.html(ai_box))
+                
+                # 3. Technical Audit Log
+                audit_html = f"""
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin: 10px 0; font-family: 'Courier New', Courier, monospace;">
+                    <b style="color: #475569;">📑 Technical Audit (Console & Network):</b>
+                    <div style="font-size: 11px; max-height: 200px; overflow-y: auto; margin-top: 10px;">
+                        <span style="color: #64748b;">Console:</span><br>{"<br>".join(logs.get('console', [])) or "None"}<br><br>
+                        <span style="color: #ef4444;">Network:</span><br>{"<br>".join(logs.get('network_errors', [])) or "None"}
+                    </div>
+                </div>
+                """
+                extra.append(pytest_html.extras.html(audit_html))
+
     except Exception as e:
         print(f"DEBUG: Error in report hook: {str(e)}")
 

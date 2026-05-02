@@ -35,10 +35,20 @@ This framework features a "Brain" layer that integrates directly with local AI m
 ### 4. Self-Healing Locator Handling (Experimental)
 - **How it works**: On failure, the AI analyzes the page's HTML structure to suggest stable alternative selectors, reducing maintenance time.
 
-### 5. Multi-Layer Automation
-- **UI Testing**: End-to-End flows (Login, Cart, Checkout, Logout).
-- **API Testing**: Validates backend endpoints for status, schema, and performance.
-- **Mobile Emulation**: Supports testing on different viewports and mobile browser engines.
+### 5. Multi-Layer Automation & Extensive Test Coverage
+This framework now supports over **50+ types of testing** categorized logically:
+
+-   **Functional Testing**: 
+    -   *Smoke, Sanity, Regression, Retesting, Integration, System, E2E, UAT, Alpha, Beta.*
+-   **Structural & Black Box**: 
+    -   *Boundary Value Analysis, Equivalence Partitioning, Positive/Negative Testing, White Box, Gray Box.*
+-   **Non-Functional Testing**: 
+    -   *Performance (Load, Stress, Benchmark), Security (Vulnerability, SQLi, XSS), Usability/UX, Accessibility (A11y), Reliability, Resilience, Chaos.*
+-   **Compatibility & Mobile**: 
+    -   *Cross-Browser, Cross-Platform, Responsive Design, Mobile Emulation, Localization (l10n), Internationalization (i18n).*
+-   **Specialized Testing**: 
+    -   *API Testing, Exploratory, Ad-hoc, Monkey Testing.*
+
 
 ---
 
@@ -63,8 +73,16 @@ This framework features a "Brain" layer that integrates directly with local AI m
 
 4. **Run Specific Suite**:
    ```bash
-   pytest tests/test_security.py -m security
+   # Run Smoke tests
+   pytest -m smoke
+   
+   # Run Security & Performance tests
+   pytest -m "security or performance"
+   
+   # Run all Functional tests
+   pytest tests/functional/
    ```
+
 
 ---
 

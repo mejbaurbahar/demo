@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+reports/
+*.log
+.env
+venv/
+ENV/
+*.png
+*.mp4
+.vscode/
+.idea/
