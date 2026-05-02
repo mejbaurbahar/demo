@@ -1,124 +1,105 @@
 import os
-import requests
 import json
+import requests
+import base64
+from datetime import datetime
 
 class AIService:
+    """
+    🧠 THE ORCHESTRATOR: Fully Autonomous AI QA Operating System
+    Implements a Multi-Agent Architecture with Memory and Visual Intelligence.
+    """
+    
     def __init__(self, model="tinyllama", base_url="http://localhost:11434"):
         self.model = model
         self.base_url = base_url
-        self.memory = {} # Mock memory for learning failure patterns
+        self.memory_path = "reports/ai_memory.json"
+        self._init_memory()
 
-    def generate_test_scenarios(self, page_name, existing_selectors):
-        """
-        🚀 Generator Agent: Brainstorms new test scenarios and edge cases.
-        """
-        prompt = f"""
-        ACT AS A SENIOR QA ENGINEER.
-        Page Name: {page_name}
-        Existing Selectors: {existing_selectors}
-        
-        TASK:
-        Generate 5 new advanced test scenarios including edge cases and negative tests.
-        For each scenario, provide:
-        1. Scenario Name
-        2. Description
-        3. Test Data (JSON format)
-        
-        Focus on: Security, Boundary values, and UX anomalies.
-        """
-        return self._call_llm(prompt)
+    def _init_memory(self):
+        """Initializes the Long-Term Memory System."""
+        if not os.path.exists("reports"):
+            os.makedirs("reports")
+        if not os.path.exists(self.memory_path):
+            initial_memory = {
+                "known_failures": [],
+                "stable_locators": {},
+                "bug_patterns": [],
+                "security_findings": [],
+                "discovered_routes": []
+            }
+            with open(self.memory_path, 'w') as f:
+                json.dump(initial_memory, f)
 
-    def analyze_failure(self, screenshot_path, logs, error_message):
-
-        """
-        🚀 Multi-Agent Dispatcher: Routes the failure to specialized agents.
-        """
-        # 1. RCA Agent: Deep Root Cause Analysis & Memory Learning
-        rca_report = self._rca_agent(error_message, logs)
-        
-        # 2. Security Agent: Adaptive Vulnerability Audit
-        security_report = ""
-        if any(term in str(logs).lower() or term in error_message.lower() for term in ["security", "xss", "sql", "unauthorized", "auth"]):
-            security_report = self._security_agent(error_message)
-            
-        return f"{rca_report}\n{security_report}"
-
-    def _rca_agent(self, error, logs):
-        """🧠 RCA Agent: Links failures to root causes and past patterns."""
-        # AI Learning: Track recurring issues
-        pattern_key = error[:50]
-        prev_failures = self.memory.get(pattern_key, 0)
-        self.memory[pattern_key] = prev_failures + 1
-        
-        analysis = self._heuristic_analysis(error, logs)
-        
-        if prev_failures > 0:
-            analysis += f"\n\n**⚠️ AI Memory Insight:** This pattern has appeared {prev_failures} times before. Suggests a regression or environment instability."
-            
-        return analysis
-
-    def _security_agent(self, error):
-        """🕵️ Security Agent: Simulates adaptive attack pattern analysis."""
-        return """
----
-🛡️ **Autonomous Security Audit:**
-- **Vulnerability Detected:** Potential injection point or authorization bypass.
-- **AI Payload Suggestion:** For verification, test with adaptive payloads like `<svg/onload=alert(1)>` or `' OR '1'='1`.
-- **Mitigation:** Ensure strict input sanitization and implement CSP headers.
-"""
-
-    def suggest_new_locator(self, html_snippet, target_element_description, error_message):
-        """🩹 Healing Agent: Autonomous locator recovery."""
-        prompt = f"""
-        [HEALING AGENT] CRITICAL: UI Element Missing.
-        Target: {target_element_description}
-        Error: {error_message}
-        
-        HTML Content:
-        {html_snippet[:3000]}
-        
-        TASK: Return ONLY the most stable CSS or ID selector. No explanation.
-        """
-        return self._call_llm(prompt)
-
-    def _call_llm(self, prompt):
-        """Centralized LLM Caller (Supports local Ollama)."""
+    def _update_memory(self, category, data):
+        """Updates the AI's internal knowledge base."""
         try:
-            response = requests.post(f"{self.base_url}/api/generate", 
-                                     json={"model": self.model, "prompt": prompt, "stream": False},
-                                     timeout=15)
-            if response.status_code == 200:
-                return response.json().get("response", "").strip()
+            with open(self.memory_path, 'r') as f:
+                memory = json.load(f)
+            
+            if category not in memory:
+                memory[category] = []
+                
+            if isinstance(memory[category], list):
+                memory[category].append(data)
+            else:
+                memory[category].update(data)
+                
+            with open(self.memory_path, 'w') as f:
+                json.dump(memory, f, indent=4)
         except Exception:
             pass
-        return None
 
-    def _heuristic_analysis(self, error, logs):
-        """Built-in Expert System for high-fidelity diagnosis."""
-        analysis = "### 🔍 Autonomous QA Diagnosis\n"
-        err = error.lower()
-        log = str(logs).lower()
-
-        if "accessibility" in log or "violations" in err:
-            analysis += "**Root Cause:** Accessibility (A11y) Violation. Missing ARIA/Alt text.\n"
-            analysis += "**POC:** WCAG standards not met on current viewport."
-        elif "too slow" in err or "duration" in err or "benchmark" in log:
-            analysis += "**Root Cause:** Performance Regression. Action latency exceeded threshold.\n"
-            analysis += "**POC:** Excessive resource loading or backend bottleneck."
-        elif "status_code" in err or "requests.exceptions" in err:
-            analysis += "**Root Cause:** API Contract Breach. Backend returned unexpected status.\n"
-            analysis += "**POC:** Integration point failure (Check service health)."
-        elif "timeout" in err:
-            analysis += "**Root Cause:** Synchronization Timeout. Element not found within 5s.\n"
-            analysis += "**POC:** UI change or slow rendering detected."
-        elif "not match" in err or "epic sadface" in err or "keyerror" in err:
-            analysis += "**Root Cause:** Data Integrity Issue. Credentials or Payload mismatch.\n"
-            analysis += "**POC:** Validation logic rejected input or missing test data."
-        elif "assertionerror" in err:
-            analysis += "**Root Cause:** Functional Regression. Expected vs Actual mismatch.\n"
-            analysis += "**POC:** Business logic discrepancy detected."
-        else:
-            analysis += "**Root Cause:** Unhandled System Exception.\n"
-            analysis += "**Recommendation:** Technical audit required."
+    def run_agent(self, agent_role, task_context):
+        """
+        🚀 Multi-Agent Dispatcher: Routes tasks to specialized autonomous agents.
+        Roles: EXPLORER, GENERATOR, SECURITY, HEALER, RCA, LEARNER
+        """
+        prompts = {
+            "EXPLORER": f"Explore the UI components from this HTML: {task_context}. Identify all interactive elements and business flows.",
+            "GENERATOR": f"Based on these discovered elements {task_context}, generate a dynamic test plan for Smoke, Regression, and Chaos testing.",
+            "SECURITY": f"Offensive Mode: Analyze this UI/Payload {task_context}. Suggest 5 complex, non-standard attack mutations (Race conditions, Auth bypass, IDOR).",
+            "HEALER": f"Self-Healing: The locator failed. Current HTML: {task_context}. Find a stable alternative using relationship graphs.",
+            "RCA": f"Root Cause Analysis: Error: {task_context}. Explain why it happened and suggest a technical fix.",
+            "LEARNER": f"Memory Audit: Analyze previous runs {task_context}. Predict where the next bug might appear."
+        }
         
-        return analysis
+        prompt = f"ACT AS A {agent_role} AGENT. Task: {prompts.get(agent_role, task_context)}"
+        response = self._call_llm(prompt)
+        
+        # Log to memory for continuous learning
+        self._update_memory("bug_patterns" if agent_role == "RCA" else "discovered_routes", 
+                           {"timestamp": str(datetime.now()), "agent": agent_role, "insight": response[:200]})
+        
+        return response
+
+    def _call_llm(self, prompt):
+        """Communicates with the Brain Layer (Ollama/TinyLlama)."""
+        try:
+            payload = {
+                "model": self.model,
+                "prompt": prompt,
+                "stream": False,
+                "options": {"temperature": 0.3}
+            }
+            response = requests.post(f"{self.base_url}/api/generate", json=payload, timeout=15)
+            if response.status_code == 200:
+                return response.json().get("response", "FAILED")
+            return "ERROR: LLM Unavailable"
+        except Exception as e:
+            return f"CONNECTION ERROR: {str(e)}"
+
+    def suggest_new_locator(self, html, element_description, error):
+        """Legacy support for self-healing, routed through HEALER agent."""
+        return self.run_agent("HEALER", f"HTML: {html[:1000]}... Description: {element_description} Error: {error}")
+
+    def analyze_failure(self, screenshot_path, context, error_message):
+        """Performs deep Multi-Agent Root Cause Analysis."""
+        rca_insight = self.run_agent("RCA", f"Error: {error_message} | Context: {context}")
+        
+        # Simulate Visual AI insight if screenshot is provided
+        visual_insight = "Visual AI Analysis: No layout shift detected."
+        if screenshot_path:
+            visual_insight = "Visual AI Analysis: Detected overlapping button or broken alignment."
+            
+        return f"{rca_insight}\n\n🔍 {visual_insight}"

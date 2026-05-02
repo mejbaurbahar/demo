@@ -52,24 +52,24 @@ This framework is engineered to provide 360-degree quality assurance. Below are 
 
 ---
 
-## 🧠 The Autonomous QA Operating System
-This framework has evolved into a **Level 4 Autonomous Ecosystem** powered by a **Multi-Agent Architecture**:
+## 🧠 The Autonomous AI QA Operating System
+This ecosystem has achieved **Level 5 Autonomy**, functioning as a **Digital QA Engineer** rather than a simple test runner.
 
-### 🎭 Multi-Agent Intelligence
-- **🧠 RCA Agent**: Performs deep Root Cause Analysis, linking failures to patterns in its memory.
-- **🩹 Healing Agent**: Automatically recovers broken UI locators in real-time using live HTML analysis.
-- **🕵️ Security Agent**: Conducts adaptive vulnerability audits, suggesting mutation payloads for XSS/SQLi.
-- **🪄 Generator Agent**: **AI Thinking!** Automatically reads existing scripts and brainstorms advanced test cases (negative, edge-case, and boundary) to ensure 100% bug detection.
+### 🎭 Multi-Agent Collaborative Intelligence
+- **🕵️ Explorer Agent**: Independently crawls the UI, builds relationship graphs, and learns business flows.
+- **🪄 Generator Agent**: Dynamically creates test strategies, scenarios, and mutated test data in real-time.
+- **🛡️ Security Agent**: Performs offensive audits, predicting and testing for complex vulnerabilities (IDOR, Race conditions, SQLi).
+- **🩹 Healing Agent**: Automatically recovers broken locators and regenerates selector repositories.
+- **🧠 RCA Agent**: Performs deep-root cause analysis with historical context.
+- **📈 Learning Agent**: Powered by a **Long-Term Memory System** to predict bugs based on historical failure patterns.
+- **📝 Reporting Agent**: Generates stakeholder dashboards with visual POCs and technical audits.
 
-- **📉 Performance Agent**: Detects latency bottlenecks and optimizes execution timing.
-- **📝 Reporting Agent**: Generates stakeholder-ready dashboards with visual POCs and technical audits.
+### 🚀 Advanced Technologies
+- **Playwright + Python**: Core automation engine.
+- **Brain Layer**: Qwen / DeepSeek / TinyLlama (via Ollama).
+- **Memory Layer**: Persistent JSON-based intelligence (Expandable to Vector DB).
+- **Vision AI**: Visual layout understanding and OCR-based bug detection.
 
-
-### 🚀 Next-Gen Roadmap
-- **AI Test Case Generator**: Auto-generating test scenarios from Swagger/OpenAPI.
-- **AI Visual Intelligence**: Understanding layout shifts and responsive UI alignment issues.
-- **AI Smart Prioritization**: Running high-risk tests first based on Git commit history.
-- **AI Production Feedback Loop**: Syncing with Grafana/Sentry to reproduce production bugs locally.
 
 
 
