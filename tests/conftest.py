@@ -40,41 +40,40 @@ def pytest_runtest_makereport(item, call):
 
     try:
         if report.when == "call":
-                # 0. Enhanced Input Test Data (Step-like UI)
-                params = getattr(item, 'callspec', None).params if hasattr(item, 'callspec') else {}
-                payload = getattr(item, '_payload', None)
+            # 0. Enhanced Input Test Data (Step-like UI)
+            params = getattr(item, 'callspec', None).params if hasattr(item, 'callspec') else {}
+            payload = getattr(item, '_payload', None)
+            
+            if params or payload:
+                param_rows = "".join([
+                    f'<div style="display: flex; border-bottom: 1px solid #f1f5f9; padding: 5px 0;">'
+                    f'<span style="flex: 1; color: #64748b; font-weight: 500;">🔹 {k}:</span>'
+                    f'<span style="flex: 2; color: #1e293b; font-family: monospace;">{v}</span>'
+                    f'</div>' for k, v in params.items()
+                ])
                 
-                if params or payload:
-                    param_rows = "".join([
-                        f'<div style="display: flex; border-bottom: 1px solid #f1f5f9; padding: 5px 0;">'
-                        f'<span style="flex: 1; color: #64748b; font-weight: 500;">🔹 {k}:</span>'
-                        f'<span style="flex: 2; color: #1e293b; font-family: monospace;">{v}</span>'
-                        f'</div>' for k, v in params.items()
-                    ])
-                    
-                    payload_html = ""
-                    if payload:
-                        payload_json = json.dumps(payload, indent=2) if isinstance(payload, (dict, list)) else str(payload)
-                        payload_html = f"""
-                        <div style="margin-top: 10px; background: #fdf2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca;">
-                            <span style="color: #991b1b; font-weight: 700; font-size: 11px;">🔥 REQUEST PAYLOAD:</span>
-                            <pre style="margin-top: 5px; font-size: 11px; color: #b91c1c; overflow-x: auto;">{payload_json}</pre>
-                        </div>
-                        """
-
-                    param_html = f"""
-                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin: 15px 0; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                        <div style="background: #f8fafc; padding: 8px 15px; border-bottom: 1px solid #e2e8f0; color: #475569; font-weight: 700; font-size: 11px; text-transform: uppercase;">
-                            📦 Execution Data & Payloads
-                        </div>
-                        <div style="padding: 10px 15px;">
-                            {param_rows}
-                            {payload_html}
-                        </div>
+                payload_html = ""
+                if payload:
+                    payload_json = json.dumps(payload, indent=2) if isinstance(payload, (dict, list)) else str(payload)
+                    payload_html = f"""
+                    <div style="margin-top: 10px; background: #fdf2f2; padding: 10px; border-radius: 6px; border: 1px solid #fecaca;">
+                        <span style="color: #991b1b; font-weight: 700; font-size: 11px;">🔥 REQUEST PAYLOAD:</span>
+                        <pre style="margin-top: 5px; font-size: 11px; color: #b91c1c; overflow-x: auto;">{payload_json}</pre>
                     </div>
                     """
-                    extra.append(pytest_html.extras.html(param_html))
 
+                param_html = f"""
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin: 15px 0; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <div style="background: #f8fafc; padding: 8px 15px; border-bottom: 1px solid #e2e8f0; color: #475569; font-weight: 700; font-size: 11px; text-transform: uppercase;">
+                        📦 Execution Data & Payloads
+                    </div>
+                    <div style="padding: 10px 15px;">
+                        {param_rows}
+                        {payload_html}
+                    </div>
+                </div>
+                """
+                extra.append(pytest_html.extras.html(param_html))
 
             if report.passed:
                 extra.append(pytest_html.extras.html(
@@ -143,6 +142,7 @@ def pytest_runtest_makereport(item, call):
                 </div>
                 """
                 extra.append(pytest_html.extras.html(audit_html))
+
 
     except Exception as e:
         print(f"DEBUG: Error in report hook: {str(e)}")
