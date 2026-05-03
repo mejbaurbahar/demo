@@ -161,7 +161,7 @@ class AIService:
                 "options": {"temperature": 0.3, "num_predict": 512}
             }
             resp = requests.post(
-                f"{self.base_url}/api/generate", json=payload, timeout=8
+                f"{self.base_url}/api/generate", json=payload, timeout=120
             )
             if resp.status_code == 200:
                 return resp.json().get("response", "FAILED")

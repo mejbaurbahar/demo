@@ -86,8 +86,15 @@ ollama serve &
 ollama pull tinyllama
 ```
 
-### Execution
-Run the complete, multi-agent flagship suite with full HTML reporting:
+### Execution (Client Demonstration / Visual Mode)
+To see the system run autonomously in the browser with the **real-time AI UI Overlay Toast** and terminal reasoning, use the "Headed" flag with a slow-motion delay:
+```bash
+pytest tests/specialized/test_autonomous_flagship.py --headed --slowmo 1000 -v -s
+```
+*Note: The `-s` flag prints the AI's internal thought logs (`[AI] Navigated to target...`) directly to your console, and the browser will show a beautiful visual overlay answering "What is the AI doing right now?".*
+
+### Headless Execution (CI/CD)
+For silent, rapid execution without the browser popping up:
 ```bash
 pytest tests/specialized/test_autonomous_flagship.py -v --html=reports/report.html --self-contained-html
 ```

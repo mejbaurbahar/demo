@@ -14,6 +14,7 @@ from components.ai_service import AIService
 from utils.workflow_healer import WorkflowHealer
 from utils.test_data_generator import TestDataGenerator
 from utils.performance_monitor import PerformanceMonitor
+from pages.base_page import BasePage
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
 from pages.checkout_pages import CartPage, CheckoutStepOne, CheckoutStepTwo, CheckoutComplete
@@ -23,6 +24,7 @@ from pages.checkout_pages import CartPage, CheckoutStepOne, CheckoutStepTwo, Che
 def _login(page: Page, username: str = "standard_user", password: str = "secret_sauce"):
     login = LoginPage(page)
     login.navigate("https://www.saucedemo.com/")
+    login.show_ai_boot_sequence()
     login.login(username, password)
     return login
 
@@ -46,6 +48,11 @@ def test_autonomous_thinking_engine(page: Page):
 
     page.goto("https://www.saucedemo.com/")
     ai.thinking.think("Navigated to target. Analysing page state...")
+
+    # Show boot sequence for demo
+    base = BasePage(page)
+    base.show_ai_boot_sequence()
+    base._show_ai_overlay("<b>Agent:</b> EXPLORER<br><br>Extracting DOM Context...<br>Delegating to AI Model for analysis.", level="INFO")
 
     html = page.content()[:2000]
     ai.thinking.think("Extracted HTML context. Delegating to EXPLORER agent...")
@@ -188,6 +195,11 @@ def test_multi_agent_security_audit(page: Page):
     ai.thinking.think("[AGENT-COLLAB] Initiating multi-agent security audit...")
 
     page.goto("https://www.saucedemo.com/")
+    
+    base = BasePage(page)
+    base.show_ai_boot_sequence()
+    base._show_ai_overlay("<b>Agent:</b> EXPLORER<br><br>Running deep surface scan for security vulnerabilities...", level="INFO")
+    
     html = page.content()[:2000]
 
     # Agent 1: EXPLORER
