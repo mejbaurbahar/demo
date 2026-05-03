@@ -33,4 +33,4 @@ def test_autonomous_agent_orchestration(page: Page):
     prediction = ai.run_agent("LEARNER", "Saucedemo Login Page")
     assert prediction is not None
 
-    print("\n✅ Autonomous Multi-Agent Orchestration Verified.")
+    print("\n[PASS] Autonomous Multi-Agent Orchestration Verified.")

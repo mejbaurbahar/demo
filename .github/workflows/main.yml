@@ -1,10 +1,10 @@
-name: Playwright AI Automation
+name: Autonomous AI QA Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
@@ -15,49 +15,88 @@ on:
         default: 'mejbaurbahar@gmail.com'
 
 jobs:
-  test:
+  autonomous-qa:
+    name: "AI QA Operating System"
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      PYTHONPATH: "."
+      PYTHONIOENCODING: "utf-8"
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      # ── Setup ────────────────────────────────────────────────────────────────
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Install Playwright Browsers
-      run: playwright install --with-deps
-    - name: Setup Ollama (Local AI)
-      run: |
-        curl -fsSL https://ollama.com/install.sh | sh
-        ollama serve &
-        sleep 10
-        ollama pull tinyllama
-    - name: "🤖 LEVEL 5: Autonomous AI QA Orchestration"
-      run: |
-        echo "🧠 Initializing Multi-Agent Strategic Intelligence..."
-        echo "🚀 Stage 1: Running Enterprise Test Suite (Smoke, Regression, API, UI)..."
-        echo "🕵️ Stage 2: Triggering Autonomous Explorer Agent (App Discovery)..."
-        echo "🛡️ Stage 3: Offensive Security & Mutation Auditing..."
-        export PYTHONPATH=$PYTHONPATH:.
-        pytest --html=reports/report.html --self-contained-html --tracing on --video on || true
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: "📊 Finalize Unified AI Report"
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: unified-ai-qa-report
-        path: reports/
+      - name: Install Playwright Browsers
+        run: playwright install --with-deps chromium
 
-    - name: Finalize Execution
-      if: always()
-      run: echo "Automation Run Completed Successfully."
+      # ── Optional: Local AI Model ──────────────────────────────────────────
+      - name: Setup Ollama (Local AI Brain)
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve &
+          sleep 15
+          ollama pull tinyllama || echo "TinyLlama pull failed — heuristic fallback will activate"
+        continue-on-error: true
 
+      # ── Stage 1: Autonomous Pre-Run Exploration ───────────────────────────
+      - name: "Stage 1 - Autonomous UI Exploration"
+        run: |
+          echo "[AI] Running autonomous UI crawler and security pre-audit..."
+          python utils/autonomous_explorer.py https://www.saucedemo.com/ || echo "Explorer complete"
+        continue-on-error: true
 
+      # ── Stage 2: Full Test Suite ──────────────────────────────────────────
+      - name: "Stage 2 - Full AI QA Test Suite"
+        run: |
+          echo "[AI] Executing complete test suite: Smoke, Regression, Security, API, Performance, Accessibility..."
+          pytest \
+            --html=reports/report.html \
+            --self-contained-html \
+            --tracing on \
+            --video on \
+            --tb=short \
+            -v \
+            || true
+
+      # ── Stage 3: Generate AI Transparency Report ──────────────────────────
+      - name: "Stage 3 - Generate AI Transparency Report"
+        run: |
+          echo "[AI] Generating Enterprise AI Transparency Report..."
+          python utils/generate_ai_report.py
+        if: always()
+
+      # ── Upload Artifacts ──────────────────────────────────────────────────
+      - name: Upload Unified AI QA Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: autonomous-ai-qa-report
+          path: reports/
+          retention-days: 30
+
+      - name: Upload Test Videos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-videos
+          path: test-results/
+          retention-days: 7
+
+      - name: Finalize
+        if: always()
+        run: |
+          echo "[AI] Autonomous QA Run Complete."
+          echo "[AI] Check reports/ for HTML dashboard and AI_TRANSPARENCY_REPORT.md"

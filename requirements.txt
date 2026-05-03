@@ -8,5 +8,5 @@ requests
 openai
 Pillow
 beautifulsoup4
-docker
 axe-playwright-python
+faker
